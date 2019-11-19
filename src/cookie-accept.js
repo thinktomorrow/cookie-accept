@@ -2,14 +2,14 @@ export default class CookieAccept {
     
     constructor(options) {
 
-        this.options = options || {};
+        options = options || {};
 
         // defaults
-        this.options.name       = this.options.name || "cookies-accept";
-        this.options.days       = this.options.days || 365;
-        this.options.gtmEnabled = this.options.gtmEnabled;
-        this.options.gtm        = this.options.gtm || {};
-        this.options.gtm.event  = this.options.gtm.event || 'enableCookies';
+        this.name       = options.name || "cookies-accept";
+        this.days       = options.days || 365;
+        this.gtmEnabled = options.gtmEnabled;
+        this.gtm        = options.gtm || {};
+        this.gtm.event  = options.gtm.event || 'enableCookies';
 
         this.cookiebar           = document.querySelector('[data-cookiebar]');
         this.defaultCookieValues = document.querySelector('[data-cookiebar-default]') ? document.querySelector('[data-cookiebar-default]').dataset.cookiebarDefault : '';
@@ -23,7 +23,7 @@ export default class CookieAccept {
     _init() {
         let existingCookie = this._getCookieValue();
 
-        if(this.options.gtmEnabled) {
+        if(this.gtmEnabled) {
             this._setDataLayer(existingCookie || this._getDefaultCookieValue());
         } 
         
@@ -32,7 +32,7 @@ export default class CookieAccept {
         for (let i = 0; i < this.acceptTriggers.length; i++) {
             this.acceptTriggers[i].addEventListener('click', () => {
                 let value = this._createCookieValue();
-                if(this.options.gtmEnabled) this._setDataLayer(value);
+                if(this.gtmEnabled) this._setDataLayer(value);
                 this._accept(value);
                 this._close();
             }, true);
@@ -46,7 +46,7 @@ export default class CookieAccept {
     _setDataLayer(value) {
         window.dataLayer = window.dataLayer || []
         dataLayer.push({
-            'event': this.options.gtm.event,
+            'event': this.gtm.event,
             'cookies': value,
         });
     }
@@ -63,7 +63,7 @@ export default class CookieAccept {
         let cookieArr = document.cookie.split(";");
         for(let i = 0; i < cookieArr.length; i++) {
             let cookiePair = cookieArr[i].split("=");
-            if(this.options.name == cookiePair[0].trim()) {
+            if(this.name == cookiePair[0].trim()) {
                 return JSON.parse(decodeURIComponent(cookiePair[1]));
             }
         }
@@ -84,8 +84,8 @@ export default class CookieAccept {
 
     _accept(value) {
         let expires = new Date();
-        expires.setTime(expires.getTime() + this.options.days * 24 * 60 * 60 * 1000);
-        document.cookie = this.options.name + '=' + JSON.stringify(value) + ';expires=' + expires.toUTCString();
+        expires.setTime(expires.getTime() + this.days * 24 * 60 * 60 * 1000);
+        document.cookie = this.name + '=' + JSON.stringify(value) + ';expires=' + expires.toUTCString();
     }
 
     _close() {
