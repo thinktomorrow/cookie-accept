@@ -16,7 +16,7 @@ var CookieAccept = function () {
 
         // defaults
         this.options.name = this.options.name || "cookies-accept";
-        this.options.days = this.options.days || 365; // by default cookies are kept for one year
+        this.options.days = this.options.days || 365;
         this.options.gtmEnabled = this.options.gtmEnabled;
         this.options.gtm = this.options.gtm || {};
         this.options.gtm.event = this.options.gtm.event || 'enableCookies';
