@@ -12,14 +12,15 @@ var CookieAccept = function () {
     function CookieAccept(options) {
         _classCallCheck(this, CookieAccept);
 
-        this.options = options || {};
+        options = options || {};
 
         // defaults
-        this.options.name = this.options.name || "cookies-accept";
-        this.options.days = this.options.days || 365;
-        this.options.gtmEnabled = this.options.gtmEnabled;
-        this.options.gtm = this.options.gtm || {};
-        this.options.gtm.event = this.options.gtm.event || 'enableCookies';
+        this.name = options.name || "cookies-accept";
+        this.days = options.days || 365;
+        this.path = options.path || '/';
+        this.gtmEnabled = options.gtmEnabled;
+        this.gtm = options.gtm || {};
+        this.gtm.event = this.gtm.event || 'enableCookies';
 
         this.cookiebar = document.querySelector('[data-cookiebar]');
         this.defaultCookieValues = document.querySelector('[data-cookiebar-default]') ? document.querySelector('[data-cookiebar-default]').dataset.cookiebarDefault : '';
@@ -37,7 +38,7 @@ var CookieAccept = function () {
 
             var existingCookie = this._getCookieValue();
 
-            if (this.options.gtmEnabled) {
+            if (this.gtmEnabled) {
                 this._setDataLayer(existingCookie || this._getDefaultCookieValue());
             }
 
@@ -45,9 +46,9 @@ var CookieAccept = function () {
 
             for (var i = 0; i < this.acceptTriggers.length; i++) {
                 this.acceptTriggers[i].addEventListener('click', function () {
-                    var value = _this._createCookieValue();
-                    if (_this.options.gtmEnabled) _this._setDataLayer(value);
-                    _this._accept(value);
+                    var value = _this._generateCookieValueFromCheckboxes();
+                    if (_this.gtmEnabled) _this._setDataLayer(value);
+                    _this._setCookie(value);
                     _this._close();
                 }, true);
             }
@@ -63,7 +64,7 @@ var CookieAccept = function () {
         value: function _setDataLayer(value) {
             window.dataLayer = window.dataLayer || [];
             dataLayer.push({
-                'event': this.options.gtm.event,
+                'event': this.gtm.event,
                 'cookies': value
             });
         }
@@ -82,15 +83,15 @@ var CookieAccept = function () {
             var cookieArr = document.cookie.split(";");
             for (var i = 0; i < cookieArr.length; i++) {
                 var cookiePair = cookieArr[i].split("=");
-                if (this.options.name == cookiePair[0].trim()) {
+                if (this.name === cookiePair[0].trim()) {
                     return JSON.parse(decodeURIComponent(cookiePair[1]));
                 }
             }
             return null;
         }
     }, {
-        key: '_createCookieValue',
-        value: function _createCookieValue() {
+        key: '_generateCookieValueFromCheckboxes',
+        value: function _generateCookieValueFromCheckboxes() {
             var object = {};
             for (var i = 0; i < this.checkboxes.length; i++) {
                 object[this.checkboxes[i].name] = this.checkboxes[i].checked;
@@ -103,11 +104,22 @@ var CookieAccept = function () {
             this._close();
         }
     }, {
-        key: '_accept',
-        value: function _accept(value) {
+        key: '_setCookie',
+        value: function _setCookie(payload) {
+            document.cookie = this._createCookieValue(payload);
+        }
+    }, {
+        key: '_createCookieValue',
+        value: function _createCookieValue(payload) {
+
             var expires = new Date();
-            expires.setTime(expires.getTime() + this.options.days * 24 * 60 * 60 * 1000);
-            document.cookie = this.options.name + '=' + JSON.stringify(value) + ';expires=' + expires.toUTCString();
+            expires.setTime(expires.getTime() + this.days * 24 * 60 * 60 * 1000);
+
+            if (payload instanceof Object) {
+                payload = JSON.stringify(payload);
+            }
+
+            return this.name + '=' + payload + '; expires=' + expires.toUTCString() + '; path=' + this.path;
         }
     }, {
         key: '_close',
