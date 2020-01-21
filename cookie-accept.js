@@ -16,7 +16,7 @@ var CookieAccept = function () {
 
         // defaults
         this.options.name = this.options.name || "cookies-accept";
-        this.options.days = this.options.days || 365; // by default cookies are kept for one year
+        this.options.days = this.options.days || 365;
         this.options.gtmEnabled = this.options.gtmEnabled;
         this.options.gtm = this.options.gtm || {};
         this.options.gtm.event = this.options.gtm.event || 'enableCookies';
@@ -112,7 +112,7 @@ var CookieAccept = function () {
     }, {
         key: '_close',
         value: function _close() {
-            this.cookiebar.parentNode.removeChild(this.cookiebar);
+            this.cookiebar.classList.add('hidden');
         }
     }, {
         key: '_show',

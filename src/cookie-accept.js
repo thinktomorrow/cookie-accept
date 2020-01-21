@@ -89,7 +89,7 @@ export default class CookieAccept {
     }
 
     _close() {
-        this.cookiebar.parentNode.removeChild(this.cookiebar);
+        this.cookiebar.classList.add('hidden');
     }
 
     _show() {
