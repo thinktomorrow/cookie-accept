@@ -1,4 +1,4 @@
-import CookieAccept from '../cookie-accept.js';
+import CookieAccept from '../dist/cookie-accept.js';
 
 afterEach(() => {
     var cookies = document.cookie.split(";");
@@ -11,9 +11,50 @@ afterEach(() => {
     }
 });
 
+test('it can set a basic cookie', () => {
+    document.body.innerHTML =
+        '<section data-cookiebar>' +
+        '   <a data-cookiebar-accept></a>' +
+        '</section>';
+
+    window.CookieAccept = new CookieAccept({
+        name: 'basic',
+        days: 7,
+        gtmEnabled: false,
+    });
+
+    document.querySelector('[data-cookiebar-accept]').click();
+
+    expect(document.cookie).toEqual(expect.stringContaining('basic={}'));
+});
+
+test('by default cookie path is the root domain', () => {
+    document.body.innerHTML =
+        '<section data-cookiebar>' +
+        '   <a data-cookiebar-accept></a>' +
+        '</section>';
+
+    const cookieAccept = new CookieAccept({});
+
+    expect(cookieAccept._createCookieValue('cookie-value')).toEqual(expect.stringContaining('path=/'));
+});
+
+test('it can set a custom cookie path', () => {
+    document.body.innerHTML =
+        '<section data-cookiebar>' +
+        '   <a data-cookiebar-accept></a>' +
+        '</section>';
+
+    const cookieAccept = new CookieAccept({
+        path: '/subpath'
+    });
+
+    expect(cookieAccept._createCookieValue('cookie-value')).toEqual(expect.stringContaining('path=/subpath'));
+});
+
 test('it can set cookie in the dataLayer', () => {
     document.body.innerHTML =
-        '<section data-cookiebar data-cookiebar-default="functional">' + 
+        '<section data-cookiebar data-cookiebar-default="functional">' +
         '   <input data-cookiebar-checkbox type="checkbox" name="functional" checked>' +
         '   <input data-cookiebar-checkbox type="checkbox" name="analyzing">' +
         '   <input data-cookiebar-checkbox type="checkbox" name="marketing" checked>' +
@@ -29,22 +70,4 @@ test('it can set cookie in the dataLayer', () => {
     document.querySelector('[data-cookiebar-accept]').click();
 
     expect(dataLayer).toEqual(expect.arrayContaining([{"cookies": {"analyzing": false, "functional": true, "marketing": false}, "event": "enableCookies"}]));
-})
-
-test('it can set a very basic cookie', () => {
-    console.log(document.cookie);
-    document.body.innerHTML =
-        '<section data-cookiebar>' + 
-        '   <a data-cookiebar-accept></a>' +
-        '</section>';
-
-    window.CookieAccept = new CookieAccept({
-        name: 'legal-cookies',
-        days: 7,
-        gtmEnabled: false,
-    });
-
-    document.querySelector('[data-cookiebar-accept]').click();
-
-    expect(document.cookie).toEqual(expect.stringContaining('legal-cookies={}'));
 })

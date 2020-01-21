@@ -1,39 +1,40 @@
 export default class CookieAccept {
-    
+
     constructor(options) {
 
-        this.options = options || {};
+        options = options || {};
 
         // defaults
-        this.options.name       = this.options.name || "cookies-accept";
-        this.options.days       = this.options.days || 365;
-        this.options.gtmEnabled = this.options.gtmEnabled;
-        this.options.gtm        = this.options.gtm || {};
-        this.options.gtm.event  = this.options.gtm.event || 'enableCookies';
+        this.name       = options.name || "cookies-accept";
+        this.days       = options.days || 365;
+        this.path       = options.path || '/';
+        this.gtmEnabled = options.gtmEnabled;
+        this.gtm        = options.gtm || {};
+        this.gtm.event  = this.gtm.event || 'enableCookies';
 
         this.cookiebar           = document.querySelector('[data-cookiebar]');
         this.defaultCookieValues = document.querySelector('[data-cookiebar-default]') ? document.querySelector('[data-cookiebar-default]').dataset.cookiebarDefault : '';
         this.acceptTriggers      = document.querySelectorAll('[data-cookiebar-accept]');
         this.dismissTriggers     = document.querySelectorAll('[data-cookiebar-dismiss]');
         this.checkboxes          = document.querySelectorAll('[data-cookiebar-checkbox]');
-        
+
         this._init();
     }
 
     _init() {
         let existingCookie = this._getCookieValue();
 
-        if(this.options.gtmEnabled) {
+        if(this.gtmEnabled) {
             this._setDataLayer(existingCookie || this._getDefaultCookieValue());
-        } 
-        
+        }
+
         if(existingCookie == null) this._show();
-        
+
         for (let i = 0; i < this.acceptTriggers.length; i++) {
             this.acceptTriggers[i].addEventListener('click', () => {
-                let value = this._createCookieValue();
-                if(this.options.gtmEnabled) this._setDataLayer(value);
-                this._accept(value);
+                let value = this._generateCookieValueFromCheckboxes();
+                if(this.gtmEnabled) this._setDataLayer(value);
+                this._setCookie(value);
                 this._close();
             }, true);
         }
@@ -46,7 +47,7 @@ export default class CookieAccept {
     _setDataLayer(value) {
         window.dataLayer = window.dataLayer || []
         dataLayer.push({
-            'event': this.options.gtm.event,
+            'event': this.gtm.event,
             'cookies': value,
         });
     }
@@ -63,14 +64,14 @@ export default class CookieAccept {
         let cookieArr = document.cookie.split(";");
         for(let i = 0; i < cookieArr.length; i++) {
             let cookiePair = cookieArr[i].split("=");
-            if(this.options.name == cookiePair[0].trim()) {
+            if(this.name === cookiePair[0].trim()) {
                 return JSON.parse(decodeURIComponent(cookiePair[1]));
             }
         }
         return null;
     }
 
-    _createCookieValue() {
+    _generateCookieValueFromCheckboxes() {
         let object = {};
         for(let i = 0; i < this.checkboxes.length; i++) {
             object[this.checkboxes[i].name] = this.checkboxes[i].checked;
@@ -78,14 +79,24 @@ export default class CookieAccept {
         return object;
     }
 
-    _dismiss() {    
+    _dismiss() {
         this._close();
     }
 
-    _accept(value) {
+    _setCookie(payload) {
+        document.cookie = this._createCookieValue(payload);
+    }
+
+    _createCookieValue(payload) {
+
         let expires = new Date();
-        expires.setTime(expires.getTime() + this.options.days * 24 * 60 * 60 * 1000);
-        document.cookie = this.options.name + '=' + JSON.stringify(value) + ';expires=' + expires.toUTCString();
+        expires.setTime(expires.getTime() + this.days * 24 * 60 * 60 * 1000);
+
+        if(payload instanceof Object) {
+            payload = JSON.stringify(payload);
+        }
+
+        return this.name + '=' + payload + '; expires=' + expires.toUTCString() + '; path=' + this.path;
     }
 
     _close() {
