@@ -50,6 +50,12 @@ var CookieAccept = function () {
                     if (_this.gtmEnabled) _this._setDataLayer(value);
                     _this._setCookie(value);
                     _this._close();
+
+                    document.dispatchEvent(new CustomEvent('CookieSettingsUpdated', {
+                        detail: {
+                            value: value
+                        }
+                    }));
                 }, true);
             }
 

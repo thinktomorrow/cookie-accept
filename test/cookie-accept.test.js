@@ -70,4 +70,27 @@ test('it can set cookie in the dataLayer', () => {
     document.querySelector('[data-cookiebar-accept]').click();
 
     expect(dataLayer).toEqual(expect.arrayContaining([{"cookies": {"analyzing": false, "functional": true, "marketing": false}, "event": "enableCookies"}]));
-})
+});
+
+
+test('it emits event after setting cookie', () => {
+    document.addEventListener('CookieSettingsUpdated', function(event){
+        let settings = event.detail.value;
+        expect(settings).toEqual({functional: true, marketing: false});
+    });
+
+    document.body.innerHTML =
+        '<section data-cookiebar data-cookiebar-default="functional" class="hidden">' +
+        '<input data-cookiebar-checkbox type="checkbox" name="functional" checked disabled>' +
+        '<input data-cookiebar-checkbox type="checkbox" name="marketing">' +
+        '<a data-cookiebar-accept>Accept</a>' +
+        '</section>';
+
+    window.CookieAccept = new CookieAccept({
+        name: 'basic',
+        days: 7,
+        gtmEnabled: false,
+    });
+
+    document.querySelector('[data-cookiebar-accept]').click();
+});

@@ -36,6 +36,13 @@ export default class CookieAccept {
                 if(this.gtmEnabled) this._setDataLayer(value);
                 this._setCookie(value);
                 this._close();
+
+                document.dispatchEvent(new CustomEvent('CookieSettingsUpdated', {
+                    detail: {
+                        value,
+                    }
+                }));
+
             }, true);
         }
 
