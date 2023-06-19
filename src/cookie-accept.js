@@ -57,6 +57,12 @@ export default class CookieAccept {
             'event': this.gtm.event,
             'cookies': value,
         });
+
+        document.dispatchEvent(new CustomEvent('CookieSettingsPushedToDataLayer', {
+            detail: {
+                value,
+            }
+        }));
     }
 
     _getDefaultCookieValue() {

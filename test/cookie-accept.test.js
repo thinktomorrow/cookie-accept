@@ -79,6 +79,8 @@ test('it emits event after setting cookie', () => {
         expect(settings).toEqual({functional: true, marketing: false});
     });
 
+    // CookieSettingsPushedToDataLayer
+
     document.body.innerHTML =
         '<section data-cookiebar data-cookiebar-default="functional" class="hidden">' +
         '<input data-cookiebar-checkbox type="checkbox" name="functional" checked disabled>' +

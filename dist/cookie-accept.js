@@ -73,6 +73,12 @@ var CookieAccept = function () {
                 'event': this.gtm.event,
                 'cookies': value
             });
+
+            document.dispatchEvent(new CustomEvent('CookieSettingsPushedToDataLayer', {
+                detail: {
+                    value: value
+                }
+            }));
         }
     }, {
         key: '_getDefaultCookieValue',
