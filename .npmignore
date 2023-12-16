@@ -1,7 +1,7 @@
 node_modules/
 test/
 .DS_Store
-babel.config.js
+babel.config.json
 .gitignore
 .eslintrc.js
 .prettierignore
