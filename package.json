@@ -1,26 +1,31 @@
 {
-  "name": "@thinktomorrow/cookie-accept",
-  "version": "0.1.6",
-  "description": "A simple cookie acceptance package to handle cookies for notifications and cookie based prompts.",
-  "main": "./dist/cookie-accept.js",
-  "scripts": {
-    "build": "babel --presets babel-preset-env src -d ./dist",
-    "test": "jest"
-  },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/thinktomorrow/cookie-accept.git"
-  },
-  "author": "",
-  "license": "ISC",
-  "bugs": {
-    "url": "https://github.com/thinktomorrow/cookie-accept/issues"
-  },
-  "homepage": "https://github.com/thinktomorrow/cookie-accept#readme",
-  "devDependencies": {
-    "babel-cli": "^6.26.0",
-    "babel-preset-env": "^1.7.0",
-    "jest": "^24.9.0"
-  },
-  "dependencies": {}
+    "name": "@thinktomorrow/cookie-accept",
+    "version": "0.1.6",
+    "description": "A simple cookie acceptance package to handle cookies for notifications and cookie based prompts.",
+    "main": "./dist/cookie-accept.js",
+    "scripts": {
+        "build": "babel src --out-dir dist --presets=@babel/preset-env",
+        "lint": "eslint src test",
+        "test": "jest"
+    },
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/thinktomorrow/cookie-accept.git"
+    },
+    "author": "",
+    "license": "ISC",
+    "bugs": {
+        "url": "https://github.com/thinktomorrow/cookie-accept/issues"
+    },
+    "homepage": "https://github.com/thinktomorrow/cookie-accept#readme",
+    "devDependencies": {
+        "@babel/cli": "^7.23.4",
+        "@babel/core": "^7.23.6",
+        "@babel/preset-env": "^7.23.6",
+        "eslint": "^8.56.0",
+        "eslint-config-airbnb-base": "^15.0.0",
+        "eslint-plugin-import": "^2.29.1",
+        "eslint-plugin-jest": "^27.6.0",
+        "jest": "^24.9.0"
+    }
 }
