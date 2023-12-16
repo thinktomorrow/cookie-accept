@@ -1,6 +1,6 @@
 {
   "name": "@thinktomorrow/cookie-accept",
-  "version": "0.1.5",
+  "version": "0.1.6",
   "description": "A simple cookie acceptance package to handle cookies for notifications and cookie based prompts.",
   "main": "./dist/cookie-accept.js",
   "scripts": {
