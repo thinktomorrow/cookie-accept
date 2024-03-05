@@ -1,62 +1,59 @@
+import ConsentCookie from "./ConsentCookie";
+import ConsentCheckboxes from "./ConsentCheckboxes";
+
 /**
  * Cookie Accept
  * @param {Object} options
  */
 export default class CookieAccept {
-    constructor(options) {
-        // TODO: Find a better way to set default options
-        this.options = options || {};
-        this.options.gtm = options.gtm || {};
-        this.options.events = options.events || {};
+    constructor(options = {}) {
 
-        this.name = this.options.name || 'cookies-accept';
-        this.days = this.options.days || 365;
-        this.path = this.options.path || '/';
-        this.defaultValue = this.options.defaultValue || {
+        this.namespace = options.namespace || 'default';
+
+        // Cookie settings
+        this.cookieName = options.name || 'cookies-accept';
+        this.cookieDays = options.days || 60;
+        this.cookiePath = options.path || '/';
+        this.cookieDefaultValue = options.defaultValue || {
             functional: true,
             analyzing: false,
             marketing: false,
         };
 
+        const gtmOptions = options.gtm || {};
+
         this.gtm = {
-            enabled: this.options.gtm.enabled || false,
-            event: this.options.gtm.event || 'enableCookies',
+            enabled: gtmOptions.enabled || false,
+            event: gtmOptions.event || 'enableCookies',
         };
 
-        // TODO: Should we keep this, or is it overkill? What if we use two cookie-accept instances on one page?
-        this.eventPrefix = '';
         this.events = {
-            cookieExistsOnLoad: this._prependPrefixToEventName('CookieExistsOnLoad'),
-            cookieDoesNotExistOnLoad: this._prependPrefixToEventName('CookieDoesNotExistOnLoad'),
-            cookieUpdated: this._prependPrefixToEventName('CookieUpdated'),
-            cookieSettingsPushedToDataLayer: this._prependPrefixToEventName('CookieSettingsPushedToDataLayer'),
+            cookieExistsOnLoad: 'CookieExistsOnLoad',
+            cookieDoesNotExistOnLoad: 'CookieDoesNotExistOnLoad',
+            cookieUpdated: 'CookieUpdated',
+            cookieSettingsPushedToDataLayer: 'CookieSettingsPushedToDataLayer',
         };
 
-        this.checkboxSelector = this.options.checkboxSelector || '[data-ca-checkbox]';
-        this.acceptTriggerSelector = this.options.acceptTriggerSelector || '[data-ca-accept]';
-        this.rejectTriggerSelector = this.options.rejectTriggerSelector || '[data-ca-reject]';
-        this.updateTriggerSelector = this.options.updateTriggerSelector || '[data-ca-update]';
-
-        this.checkboxes = Array.from(document.querySelectorAll(this.checkboxSelector));
-        this.acceptTriggers = Array.from(document.querySelectorAll(this.acceptTriggerSelector));
-        this.rejectTriggers = Array.from(document.querySelectorAll(this.rejectTriggerSelector));
-        this.updateTriggers = Array.from(document.querySelectorAll(this.updateTriggerSelector));
+        // Consent Banner DOM
+        this.checkboxes = Array.from(document.querySelectorAll(options.checkboxSelector || '[data-ca-checkbox]'));
+        this.acceptTriggers = Array.from(document.querySelectorAll(options.acceptTriggerSelector || '[data-ca-accept]'));
+        this.rejectTriggers = Array.from(document.querySelectorAll(options.rejectTriggerSelector || '[data-ca-reject]'));
+        this.updateTriggers = Array.from(document.querySelectorAll(options.updateTriggerSelector || '[data-ca-update]'));
 
         this._init();
     }
 
     _init() {
-        let cookieValue = this._getCookieValue();
+        let cookieValue = ConsentCookie.getValue(this.cookieName);
 
         if (cookieValue) {
-            this.constructor._dispatchEvent(this.events.cookieExistsOnLoad, {
-                cookieValue,
-            });
+            this.constructor._dispatchEvent(this.events.cookieExistsOnLoad, { cookieValue, namespace: this.namespace });
         } else {
-            cookieValue = this.defaultValue;
+            cookieValue = this.cookieDefaultValue;
 
             this.constructor._dispatchEvent(this.events.cookieDoesNotExistOnLoad, {
                 cookieValue,
+                namespace: this.namespace
             });
         }
 
@@ -64,66 +61,33 @@ export default class CookieAccept {
             this._setDataLayer(cookieValue);
         }
 
-        this._setCheckboxesFromCookieValue(cookieValue);
+        ConsentCheckboxes.setCheckboxesFromCookieValue(cookieValue, this.checkboxes);
 
         this.acceptTriggers.forEach((trigger) => {
             trigger.addEventListener('click', () => {
-                const newCookieValue = this._generateAcceptedCookieValueFromCheckboxes();
+                const newCookieValue = ConsentCheckboxes.generateAcceptedCookieValueFromCheckboxes(this.checkboxes);
 
                 this._updateCookie(newCookieValue);
-
-                this._setCheckboxesFromCookieValue(newCookieValue);
+                ConsentCheckboxes.setCheckboxesFromCookieValue(newCookieValue, this.checkboxes);
             });
         });
 
         this.rejectTriggers.forEach((trigger) => {
             trigger.addEventListener('click', () => {
-                const newCookieValue = this._generateRejectedCookieValueFromCheckboxes();
+                const newCookieValue = ConsentCheckboxes.generateRejectedCookieValueFromCheckboxes(this.checkboxes);
 
                 this._updateCookie(newCookieValue);
-
-                this._setCheckboxesFromCookieValue(newCookieValue);
+                ConsentCheckboxes.setCheckboxesFromCookieValue(newCookieValue, this.checkboxes);
             });
         });
 
         this.updateTriggers.forEach((trigger) => {
             trigger.addEventListener('click', () => {
-                const newCookieValue = this._generateCookieValueFromCheckboxes();
+                const newCookieValue = ConsentCheckboxes.generateCookieValueFromCheckboxes(this.checkboxes);
 
                 this._updateCookie(newCookieValue);
             });
         });
-    }
-
-    _getCookieValue() {
-        const cookieArr = document.cookie.split(';');
-
-        for (let i = 0; i < cookieArr.length; i++) {
-            const cookiePair = cookieArr[i].split('=');
-
-            if (this.name === cookiePair[0].trim()) {
-                return JSON.parse(decodeURIComponent(cookiePair[1]));
-            }
-        }
-
-        return null;
-    }
-
-    _setCookieValue(payload) {
-        document.cookie = this._createCookieValue(payload);
-    }
-
-    _createCookieValue(payload) {
-        let cookieValue = payload;
-        const expires = new Date();
-
-        if (payload instanceof Object) {
-            cookieValue = JSON.stringify(payload);
-        }
-
-        expires.setTime(expires.getTime() + this.days * 24 * 60 * 60 * 1000);
-
-        return `${this.name}=${cookieValue}; expires=${expires.toUTCString()}; path=${this.path}`;
     }
 
     _updateCookie(cookieValue) {
@@ -131,10 +95,11 @@ export default class CookieAccept {
             this._setDataLayer(cookieValue);
         }
 
-        this._setCookieValue(cookieValue);
+        ConsentCookie.setValue(cookieValue, this.cookieName, this.cookiePath, this.cookieDays);
 
         this.constructor._dispatchEvent(this.events.cookieUpdated, {
             cookieValue,
+            namespace: this.namespace
         });
     }
 
@@ -146,52 +111,10 @@ export default class CookieAccept {
             cookies: cookieValue,
         });
 
-        // TODO(ben): What is this for? Can we remove it?
         this.constructor._dispatchEvent(this.events.cookieSettingsPushedToDataLayer, {
             cookieValue,
+            namespace: this.namespace
         });
-    }
-
-    _generateCookieValueFromCheckboxes() {
-        const object = {};
-
-        for (let i = 0; i < this.checkboxes.length; i++) {
-            object[this.checkboxes[i].name] = this.checkboxes[i].checked;
-        }
-
-        return object;
-    }
-
-    _generateAcceptedCookieValueFromCheckboxes() {
-        const object = {};
-
-        for (let i = 0; i < this.checkboxes.length; i++) {
-            object[this.checkboxes[i].name] = true;
-        }
-
-        return object;
-    }
-
-    _generateRejectedCookieValueFromCheckboxes() {
-        const object = {};
-
-        for (let i = 0; i < this.checkboxes.length; i++) {
-            object[this.checkboxes[i].name] = this.checkboxes[i].disabled;
-        }
-
-        return object;
-    }
-
-    _setCheckboxesFromCookieValue(cookieValue) {
-        for (let i = 0; i < this.checkboxes.length; i++) {
-            if (Object.prototype.hasOwnProperty.call(cookieValue, this.checkboxes[i].name)) {
-                this.checkboxes[i].checked = cookieValue[this.checkboxes[i].name];
-            }
-        }
-    }
-
-    _prependPrefixToEventName(eventName) {
-        return `${this.eventPrefix}${eventName}`;
     }
 
     static _dispatchEvent(eventName, payload) {

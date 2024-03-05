@@ -1,4 +1,4 @@
-import CookieAccept from '../dist/cookie-accept';
+import ConsentCookie from '../dist/cookie-accept';
 
 afterEach(() => {
     const cookies = document.cookie.split(';');

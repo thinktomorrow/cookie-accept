@@ -4,7 +4,7 @@
     "description": "A simple cookie acceptance package to handle cookies for notifications and cookie based prompts.",
     "main": "./dist/cookie-accept.js",
     "scripts": {
-        "build": "babel src --out-dir dist --presets=@babel/preset-env",
+        "build": "babel src/cookie-accept.js --out-dir dist --presets=@babel/preset-env",
         "lint": "eslint src test",
         "test": "jest"
     },
