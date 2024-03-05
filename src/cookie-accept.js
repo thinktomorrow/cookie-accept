@@ -1,5 +1,5 @@
-import ConsentCookie from "./ConsentCookie";
-import ConsentCheckboxes from "./ConsentCheckboxes";
+import ConsentCookie from './ConsentCookie';
+import ConsentCheckboxes from './ConsentCheckboxes';
 
 /**
  * Cookie Accept
@@ -7,7 +7,6 @@ import ConsentCheckboxes from "./ConsentCheckboxes";
  */
 export default class CookieAccept {
     constructor(options = {}) {
-
         this.namespace = options.namespace || 'default';
 
         // Cookie settings
@@ -36,9 +35,15 @@ export default class CookieAccept {
 
         // Consent Banner DOM
         this.checkboxes = Array.from(document.querySelectorAll(options.checkboxSelector || '[data-ca-checkbox]'));
-        this.acceptTriggers = Array.from(document.querySelectorAll(options.acceptTriggerSelector || '[data-ca-accept]'));
-        this.rejectTriggers = Array.from(document.querySelectorAll(options.rejectTriggerSelector || '[data-ca-reject]'));
-        this.updateTriggers = Array.from(document.querySelectorAll(options.updateTriggerSelector || '[data-ca-update]'));
+        this.acceptTriggers = Array.from(
+            document.querySelectorAll(options.acceptTriggerSelector || '[data-ca-accept]')
+        );
+        this.rejectTriggers = Array.from(
+            document.querySelectorAll(options.rejectTriggerSelector || '[data-ca-reject]')
+        );
+        this.updateTriggers = Array.from(
+            document.querySelectorAll(options.updateTriggerSelector || '[data-ca-update]')
+        );
 
         this._init();
     }
@@ -53,7 +58,7 @@ export default class CookieAccept {
 
             this.constructor._dispatchEvent(this.events.cookieDoesNotExistOnLoad, {
                 cookieValue,
-                namespace: this.namespace
+                namespace: this.namespace,
             });
         }
 
@@ -99,7 +104,7 @@ export default class CookieAccept {
 
         this.constructor._dispatchEvent(this.events.cookieUpdated, {
             cookieValue,
-            namespace: this.namespace
+            namespace: this.namespace,
         });
     }
 
@@ -113,7 +118,7 @@ export default class CookieAccept {
 
         this.constructor._dispatchEvent(this.events.cookieSettingsPushedToDataLayer, {
             cookieValue,
-            namespace: this.namespace
+            namespace: this.namespace,
         });
     }
 
