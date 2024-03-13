@@ -23,15 +23,18 @@ var CookieAccept = exports["default"] = /*#__PURE__*/function () {
     _classCallCheck(this, CookieAccept);
     this.namespace = options.namespace || 'default';
 
-    // Cookie settings
-    this.cookieName = options.name || 'cookies-accept';
-    this.cookieDays = options.days || 60;
-    this.cookiePath = options.path || '/';
-    this.cookieDefaultValue = options.defaultValue || {
+    // Consents - object with keys and boolean values
+    // Values set to true are the required consents and cannot be disabled by the user
+    this.consents = options.consents || {
       functional: true,
       analyzing: false,
       marketing: false
     };
+
+    // Cookie settings
+    this.cookieName = options.name || 'cookies-accept';
+    this.cookieDays = options.days || 60;
+    this.cookiePath = options.path || '/';
     var gtmOptions = options.gtm || {};
     this.gtm = {
       enabled: gtmOptions.enabled || false,
@@ -62,7 +65,7 @@ var CookieAccept = exports["default"] = /*#__PURE__*/function () {
           namespace: this.namespace
         });
       } else {
-        cookieValue = this.cookieDefaultValue;
+        cookieValue = this.consents;
         this.constructor._dispatchEvent(this.events.cookieDoesNotExistOnLoad, {
           cookieValue: cookieValue,
           namespace: this.namespace
@@ -71,24 +74,26 @@ var CookieAccept = exports["default"] = /*#__PURE__*/function () {
       if (this.gtm.enabled) {
         this._setDataLayer(cookieValue);
       }
-      _ConsentCheckboxes["default"].setCheckboxesFromCookieValue(cookieValue, this.checkboxes);
+      _ConsentCheckboxes["default"].updateCheckboxesByCookieValue(this.checkboxes, cookieValue);
       this.acceptTriggers.forEach(function (trigger) {
         trigger.addEventListener('click', function () {
-          var newCookieValue = _ConsentCheckboxes["default"].generateAcceptedCookieValueFromCheckboxes(_this.checkboxes);
+          var newCookieValue = _ConsentCheckboxes["default"].toCookieValuesForcedToTrue(_this.checkboxes);
           _this._updateCookie(newCookieValue);
-          _ConsentCheckboxes["default"].setCheckboxesFromCookieValue(newCookieValue, _this.checkboxes);
+          _this.checkboxes = _ConsentCheckboxes["default"].updateCheckboxesByCookieValue(_this.checkboxes, newCookieValue);
         });
       });
       this.rejectTriggers.forEach(function (trigger) {
         trigger.addEventListener('click', function () {
-          var newCookieValue = _ConsentCheckboxes["default"].generateRejectedCookieValueFromCheckboxes(_this.checkboxes);
+          var newCookieValue = _ConsentCheckboxes["default"].toCookieValuesForcedToFalse(_this.checkboxes, Object.keys(_this.consents).filter(function (consentName) {
+            return !!_this.consents[consentName];
+          }));
           _this._updateCookie(newCookieValue);
-          _ConsentCheckboxes["default"].setCheckboxesFromCookieValue(newCookieValue, _this.checkboxes);
+          _ConsentCheckboxes["default"].updateCheckboxesByCookieValue(_this.checkboxes, newCookieValue);
         });
       });
       this.updateTriggers.forEach(function (trigger) {
         trigger.addEventListener('click', function () {
-          var newCookieValue = _ConsentCheckboxes["default"].generateCookieValueFromCheckboxes(_this.checkboxes);
+          var newCookieValue = _ConsentCheckboxes["default"].toCookieValues(_this.checkboxes);
           _this._updateCookie(newCookieValue);
         });
       });

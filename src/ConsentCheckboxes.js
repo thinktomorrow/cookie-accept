@@ -1,5 +1,16 @@
 const ConsentCheckboxes = {
-    generateCookieValueFromCheckboxes(checkboxes) {
+
+    updateCheckboxesByCookieValue(checkboxes, cookieValue) {
+        for (let i = 0; i < checkboxes.length; i++) {
+            if (Object.prototype.hasOwnProperty.call(cookieValue, checkboxes[i].name)) {
+                checkboxes[i].checked = cookieValue[checkboxes[i].name];
+            }
+        }
+
+        return checkboxes;
+    },
+
+    toCookieValues(checkboxes) {
         const object = {};
 
         for (let i = 0; i < checkboxes.length; i++) {
@@ -9,7 +20,7 @@ const ConsentCheckboxes = {
         return object;
     },
 
-    generateAcceptedCookieValueFromCheckboxes(checkboxes) {
+    toCookieValuesForcedToTrue(checkboxes) {
         const object = {};
 
         for (let i = 0; i < checkboxes.length; i++) {
@@ -19,25 +30,17 @@ const ConsentCheckboxes = {
         return object;
     },
 
-    generateRejectedCookieValueFromCheckboxes(checkboxes) {
+    toCookieValuesForcedToFalse(checkboxes, requiredConsentNames = []) {
         const object = {};
 
         for (let i = 0; i < checkboxes.length; i++) {
             // We assume that the required / functional consent is disabled in the consent banner
             // And that all the other consent checkboxes are never disabled. This way we can
             // retrieve all rejectable cookie values by checking the disabled attribute
-            object[checkboxes[i].name] = checkboxes[i].disabled;
+            object[checkboxes[i].name] = !!requiredConsentNames.includes(checkboxes[i].name);
         }
 
         return object;
-    },
-
-    setCheckboxesFromCookieValue(cookieValue, checkboxes) {
-        for (let i = 0; i < checkboxes.length; i++) {
-            if (Object.prototype.hasOwnProperty.call(cookieValue, checkboxes[i].name)) {
-                checkboxes[i].checked = cookieValue[checkboxes[i].name];
-            }
-        }
     },
 };
 

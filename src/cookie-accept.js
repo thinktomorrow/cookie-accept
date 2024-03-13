@@ -9,15 +9,18 @@ export default class CookieAccept {
     constructor(options = {}) {
         this.namespace = options.namespace || 'default';
 
-        // Cookie settings
-        this.cookieName = options.name || 'cookies-accept';
-        this.cookieDays = options.days || 60;
-        this.cookiePath = options.path || '/';
-        this.cookieDefaultValue = options.defaultValue || {
+        // Consents - object with keys and boolean values
+        // Values set to true are the required consents and cannot be disabled by the user
+        this.consents = options.consents || {
             functional: true,
             analyzing: false,
             marketing: false,
         };
+
+        // Cookie settings
+        this.cookieName = options.name || 'cookies-accept';
+        this.cookieDays = options.days || 60;
+        this.cookiePath = options.path || '/';
 
         const gtmOptions = options.gtm || {};
 
@@ -54,7 +57,7 @@ export default class CookieAccept {
         if (cookieValue) {
             this.constructor._dispatchEvent(this.events.cookieExistsOnLoad, { cookieValue, namespace: this.namespace });
         } else {
-            cookieValue = this.cookieDefaultValue;
+            cookieValue = this.consents;
 
             this.constructor._dispatchEvent(this.events.cookieDoesNotExistOnLoad, {
                 cookieValue,
@@ -66,29 +69,29 @@ export default class CookieAccept {
             this._setDataLayer(cookieValue);
         }
 
-        ConsentCheckboxes.setCheckboxesFromCookieValue(cookieValue, this.checkboxes);
+        ConsentCheckboxes.updateCheckboxesByCookieValue(this.checkboxes, cookieValue);
 
         this.acceptTriggers.forEach((trigger) => {
             trigger.addEventListener('click', () => {
-                const newCookieValue = ConsentCheckboxes.generateAcceptedCookieValueFromCheckboxes(this.checkboxes);
+                const newCookieValue = ConsentCheckboxes.toCookieValuesForcedToTrue(this.checkboxes);
 
                 this._updateCookie(newCookieValue);
-                ConsentCheckboxes.setCheckboxesFromCookieValue(newCookieValue, this.checkboxes);
+                this.checkboxes = ConsentCheckboxes.updateCheckboxesByCookieValue(this.checkboxes, newCookieValue);
             });
         });
 
         this.rejectTriggers.forEach((trigger) => {
             trigger.addEventListener('click', () => {
-                const newCookieValue = ConsentCheckboxes.generateRejectedCookieValueFromCheckboxes(this.checkboxes);
+                const newCookieValue = ConsentCheckboxes.toCookieValuesForcedToFalse(this.checkboxes, Object.keys(this.consents).filter((consentName) => !! this.consents[consentName]));
 
                 this._updateCookie(newCookieValue);
-                ConsentCheckboxes.setCheckboxesFromCookieValue(newCookieValue, this.checkboxes);
+                ConsentCheckboxes.updateCheckboxesByCookieValue(this.checkboxes, newCookieValue);
             });
         });
 
         this.updateTriggers.forEach((trigger) => {
             trigger.addEventListener('click', () => {
-                const newCookieValue = ConsentCheckboxes.generateCookieValueFromCheckboxes(this.checkboxes);
+                const newCookieValue = ConsentCheckboxes.toCookieValues(this.checkboxes);
 
                 this._updateCookie(newCookieValue);
             });

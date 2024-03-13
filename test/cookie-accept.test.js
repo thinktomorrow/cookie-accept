@@ -65,6 +65,7 @@ test('it can reject all cookie values', () => {
         name: 'test-cookie',
         days: 7,
         gtmEnabled: false,
+        consents: { functional: false, analyzing: false, marketing: false },
     });
 
     document.querySelector('[data-ca-reject]').click();
@@ -74,10 +75,10 @@ test('it can reject all cookie values', () => {
     );
 });
 
-test('it can reject all cookie values expect if checkbox is checked and disabled', () => {
+test('it can reject all optional cookie values', () => {
     document.body.innerHTML = `
         <section>
-           <input data-ca-checkbox type="checkbox" name="functional" disabled checked>
+           <input data-ca-checkbox type="checkbox" name="functional" checked>
            <input data-ca-checkbox type="checkbox" name="analyzing">
            <a data-ca-reject></a>
         </section>
@@ -116,52 +117,6 @@ test('it can update cookie values again', () => {
     expect(document.cookie).toEqual(expect.stringContaining('test-cookie={"functional":true,"analyzing":true}'));
 });
 
-// test('it can set a default root domain cookie path', () => {
-//     document.body.innerHTML = `
-//         <section>
-//             <a data-ca-accept></a>
-//         </section>
-//     `;
-//
-//     const cookieAccept = new CookieAccept({});
-//
-//     expect(cookieAccept._createCookieValue('cookie-value')).toEqual(expect.stringContaining('path=/'));
-// });
-
-// test('it can set a custom cookie path', () => {
-//     document.body.innerHTML = `
-//         <section data-cookiebar>
-//             <a data-cookiebar-accept></a>
-//         </section>
-//     `;
-//
-//     const cookieAccept = new CookieAccept({
-//         path: '/subpath',
-//     });
-//
-//     expect(cookieAccept._createCookieValue('cookie-value')).toEqual(expect.stringContaining('path=/subpath'));
-// });
-
-// test('it can set a custom cookie expiration time', () => {
-//     document.body.innerHTML = `
-//         <section data-cookiebar>
-//             <a data-cookiebar-accept></a>
-//         </section>
-//     `;
-//
-//     const cookieAccept = new CookieAccept({
-//         days: 30,
-//     });
-//
-//     const expires = new Date();
-//
-//     expires.setTime(expires.getTime() + 30 * 24 * 60 * 60 * 1000);
-//
-//     expect(cookieAccept._createCookieValue('cookie-value')).toEqual(
-//         expect.stringContaining(`expires=${expires.toUTCString()}`)
-//     );
-// });
-
 test('it can set cookie in dataLayer', () => {
     document.body.innerHTML = `
         <section>
@@ -189,13 +144,33 @@ test('it can set cookie in dataLayer', () => {
     );
 });
 
+test('it can set cookie with custom consent names', () => {
+    document.body.innerHTML = `
+        <section>
+           <input data-ca-checkbox type="checkbox" name="base" checked>
+           <input data-ca-checkbox type="checkbox" name="analytics">
+           <a data-ca-update></a>
+        </section>
+    `;
+
+    window.CookieAccept = new CookieAccept({
+        name: 'test-cookie',
+        days: 1,
+        gtmEnabled: false,
+    });
+
+    document.querySelector('[data-ca-update]').click();
+
+    expect(document.cookie).toEqual(expect.stringContaining('test-cookie={"base":true,"analytics":false}'));
+});
+
 test('it can set default cookie values in dataLayer', () => {
     document.body.innerHTML = '';
 
     window.CookieAccept = new CookieAccept({
         name: 'test-cookie',
         days: 7,
-        defaultValue: {
+        consents: {
             think: false,
             tomorrow: true,
         },
