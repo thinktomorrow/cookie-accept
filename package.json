@@ -1,7 +1,7 @@
 {
     "name": "@thinktomorrow/cookie-accept",
-    "version": "0.1.6",
-    "description": "A simple cookie acceptance package to handle cookies for notifications and cookie based prompts.",
+    "version": "0.2.0",
+    "description": "A simple consent management package (CMP). It handles acceptance and rejection of consent via cookies. Also handles the display of the consent prompt.",
     "main": "./dist/cookie-accept.js",
     "scripts": {
         "build": "babel src --out-dir dist --presets=@babel/preset-env",

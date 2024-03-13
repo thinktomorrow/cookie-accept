@@ -40,8 +40,8 @@ In order to present the cookie accept option to the visitor, there are a couple 
 DOM elements required. It is best to start from the following template:
 
 ```html 
-<section data-cookiebar class="hidden">
-    <a data-cookiebar-accept>Accept</a>
+<section data-ca class="hidden">
+    <a data-ca-accept>Accept</a>
 </section>
 ```
 
@@ -50,10 +50,10 @@ A more advanced setup is where we integrate with google tag manager to handle th
 based on the acceptance of certain cookie types. Here is an example where we allow the visitor to choose if he wants to accepts marketing scripts or not.
 
 ```html 
-<section data-cookiebar data-cookiebar-default="functional" class="hidden">
-    <input data-cookiebar-checkbox type="checkbox" name="functional" checked disabled>
-    <input data-cookiebar-checkbox type="checkbox" name="marketing">
-    <a data-cookiebar-accept>Accept</a>
+<section data-ca class="hidden">
+    <input data-ca-checkbox type="checkbox" name="functional" checked disabled>
+    <input data-ca-checkbox type="checkbox" name="marketing">
+    <a data-ca-accept>Accept</a>
 </section>
 ```
 
