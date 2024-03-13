@@ -4,10 +4,6 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 exports["default"] = void 0;
-/**
- * Cookie Accept
- * @param {Object} options
- */
 var ConsentCookie = exports["default"] = {
   getValue: function getValue(name) {
     var cookieArr = document.cookie.split(';');

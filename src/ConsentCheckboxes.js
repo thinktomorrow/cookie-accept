@@ -1,5 +1,4 @@
 const ConsentCheckboxes = {
-
     generateCookieValueFromCheckboxes(checkboxes) {
         const object = {};
 
@@ -39,8 +38,7 @@ const ConsentCheckboxes = {
                 checkboxes[i].checked = cookieValue[checkboxes[i].name];
             }
         }
-    }
-
+    },
 };
 
-export {ConsentCheckboxes as default}
+export { ConsentCheckboxes as default };

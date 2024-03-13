@@ -1,7 +1,3 @@
-/**
- * Cookie Accept
- * @param {Object} options
- */
 const ConsentCookie = {
     getValue(name) {
         const cookieArr = document.cookie.split(';');
@@ -37,6 +33,6 @@ const ConsentCookie = {
 
         return `${name}=${cookieValue}; expires=${expires.toUTCString()}; path=${path}`;
     },
-}
+};
 
-export {ConsentCookie as default}
+export { ConsentCookie as default };
