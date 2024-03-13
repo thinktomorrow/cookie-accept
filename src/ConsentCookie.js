@@ -10,7 +10,11 @@ const ConsentCookie = {
             const cookiePair = cookieArr[i].split('=');
 
             if (name === cookiePair[0].trim()) {
-                return JSON.parse(decodeURIComponent(cookiePair[1]));
+                try {
+                    return JSON.parse(decodeURIComponent(cookiePair[1]));
+                } catch (e) {
+                    return decodeURIComponent(cookiePair[1]);
+                }
             }
         }
 
