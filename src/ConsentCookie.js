@@ -23,15 +23,20 @@ const ConsentCookie = {
 
     _createValue(payload, name, path, days) {
         let cookieValue = payload;
-        const expires = new Date();
 
         if (payload instanceof Object) {
             cookieValue = JSON.stringify(payload);
         }
 
+        return `${name}=${cookieValue}; expires=${ConsentCookie._createDateUTCString(days)}; path=${path}`;
+    },
+
+    _createDateUTCString(days) {
+        const expires = new Date();
+
         expires.setTime(expires.getTime() + days * 24 * 60 * 60 * 1000);
 
-        return `${name}=${cookieValue}; expires=${expires.toUTCString()}; path=${path}`;
+        return expires.toUTCString();
     },
 };
 

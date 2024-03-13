@@ -24,11 +24,14 @@ var ConsentCookie = exports["default"] = {
   },
   _createValue: function _createValue(payload, name, path, days) {
     var cookieValue = payload;
-    var expires = new Date();
     if (payload instanceof Object) {
       cookieValue = JSON.stringify(payload);
     }
+    return "".concat(name, "=").concat(cookieValue, "; expires=").concat(ConsentCookie._createDateUTCString(days), "; path=").concat(path);
+  },
+  _createDateUTCString: function _createDateUTCString(days) {
+    var expires = new Date();
     expires.setTime(expires.getTime() + days * 24 * 60 * 60 * 1000);
-    return "".concat(name, "=").concat(cookieValue, "; expires=").concat(expires.toUTCString(), "; path=").concat(path);
+    return expires.toUTCString();
   }
 };
