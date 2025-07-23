@@ -1,6 +1,6 @@
 {
     "name": "@thinktomorrow/cookie-accept",
-    "version": "0.2.0",
+    "version": "0.2.1",
     "description": "A simple consent management package (CMP). It handles acceptance and rejection of consent via cookies. Also handles the display of the consent prompt.",
     "main": "./dist/cookie-accept.js",
     "scripts": {
@@ -19,13 +19,13 @@
     },
     "homepage": "https://github.com/thinktomorrow/cookie-accept#readme",
     "devDependencies": {
-        "@babel/cli": "^7.23.4",
-        "@babel/core": "^7.23.6",
-        "@babel/preset-env": "^7.23.6",
-        "eslint": "^8.56.0",
+        "@babel/cli": "^7.28.0",
+        "@babel/core": "^7.28.0",
+        "@babel/preset-env": "^7.28.0",
+        "eslint": "^8.57.1",
         "eslint-config-airbnb-base": "^15.0.0",
-        "eslint-plugin-import": "^2.29.1",
-        "eslint-plugin-jest": "^27.6.0",
+        "eslint-plugin-import": "^2.32.0",
+        "eslint-plugin-jest": "^27.9.0",
         "jest": "^24.9.0"
     }
 }

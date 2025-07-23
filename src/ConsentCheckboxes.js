@@ -1,5 +1,4 @@
 const ConsentCheckboxes = {
-
     updateCheckboxesByCookieValue(checkboxes, cookieValue) {
         for (let i = 0; i < checkboxes.length; i++) {
             if (Object.prototype.hasOwnProperty.call(cookieValue, checkboxes[i].name)) {

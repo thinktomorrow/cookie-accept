@@ -7,6 +7,9 @@ import ConsentCheckboxes from './ConsentCheckboxes';
  */
 export default class CookieAccept {
     constructor(options = {}) {
+        const gtmOptions = options.gtm || {};
+        const eventsOptions = options.events || {};
+
         this.namespace = options.namespace || 'default';
 
         // Consents - object with keys and boolean values
@@ -22,18 +25,19 @@ export default class CookieAccept {
         this.cookieDays = options.days || 60;
         this.cookiePath = options.path || '/';
 
-        const gtmOptions = options.gtm || {};
-
+        // Google Tag Manager
         this.gtm = {
             enabled: gtmOptions.enabled || false,
             event: gtmOptions.event || 'enableCookies',
         };
 
+        // Events
         this.events = {
-            cookieExistsOnLoad: 'CookieExistsOnLoad',
-            cookieDoesNotExistOnLoad: 'CookieDoesNotExistOnLoad',
-            cookieUpdated: 'CookieUpdated',
-            cookieSettingsPushedToDataLayer: 'CookieSettingsPushedToDataLayer',
+            cookieExistsOnLoad: eventsOptions.cookieExistsOnLoad || 'CookieExistsOnLoad',
+            cookieDoesNotExistOnLoad: eventsOptions.cookieDoesNotExistOnLoad || 'CookieDoesNotExistOnLoad',
+            cookieUpdated: eventsOptions.cookieUpdated || 'CookieUpdated',
+            cookieSettingsPushedToDataLayer:
+                eventsOptions.cookieSettingsPushedToDataLayer || 'CookieSettingsPushedToDataLayer',
         };
 
         // Consent Banner DOM
@@ -82,7 +86,10 @@ export default class CookieAccept {
 
         this.rejectTriggers.forEach((trigger) => {
             trigger.addEventListener('click', () => {
-                const newCookieValue = ConsentCheckboxes.toCookieValuesForcedToFalse(this.checkboxes, Object.keys(this.consents).filter((consentName) => !! this.consents[consentName]));
+                const newCookieValue = ConsentCheckboxes.toCookieValuesForcedToFalse(
+                    this.checkboxes,
+                    Object.keys(this.consents).filter((consentName) => !!this.consents[consentName])
+                );
 
                 this._updateCookie(newCookieValue);
                 ConsentCheckboxes.updateCheckboxesByCookieValue(this.checkboxes, newCookieValue);
