@@ -43,4 +43,4 @@ const ConsentCheckboxes = {
     },
 };
 
-export { ConsentCheckboxes as default };
+export default ConsentCheckboxes;

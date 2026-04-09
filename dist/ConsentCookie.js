@@ -4,7 +4,7 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 exports["default"] = void 0;
-var ConsentCookie = exports["default"] = {
+var ConsentCookie = {
   getValue: function getValue(name) {
     var cookieArr = document.cookie.split(';');
     for (var i = 0; i < cookieArr.length; i++) {
@@ -35,3 +35,4 @@ var ConsentCookie = exports["default"] = {
     return expires.toUTCString();
   }
 };
+var _default = exports["default"] = ConsentCookie;

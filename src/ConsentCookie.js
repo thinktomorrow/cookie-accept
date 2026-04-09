@@ -40,4 +40,4 @@ const ConsentCookie = {
     },
 };
 
-export { ConsentCookie as default };
+export default ConsentCookie;

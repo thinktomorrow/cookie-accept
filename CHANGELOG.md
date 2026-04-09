@@ -1,5 +1,11 @@
 # Changelog
 
+## Unreleased
+- Fixed: Updated to latest packages
+- Fixed: lint errors
+- Fixed: test suite (missing jsdom)
+
+
 ## 0.2.1
 
 -   Fix: Event names were set up to be configurable, but the constructor options weren't properly passed to the variables. Now you can correctly set each event name.

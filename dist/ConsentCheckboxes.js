@@ -4,7 +4,7 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 exports["default"] = void 0;
-var ConsentCheckboxes = exports["default"] = {
+var ConsentCheckboxes = {
   updateCheckboxesByCookieValue: function updateCheckboxesByCookieValue(checkboxes, cookieValue) {
     for (var i = 0; i < checkboxes.length; i++) {
       if (Object.prototype.hasOwnProperty.call(cookieValue, checkboxes[i].name)) {
@@ -39,3 +39,4 @@ var ConsentCheckboxes = exports["default"] = {
     return object;
   }
 };
+var _default = exports["default"] = ConsentCheckboxes;
