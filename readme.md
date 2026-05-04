@@ -15,6 +15,13 @@ The library can be imported and initialized in your js file like so:
  window.CookieAccept = new CookieAccept();
 ```
 
+The package also keeps supporting CommonJS consumers:
+
+```js
+const CookieAccept = require('@thinktomorrow/cookie-accept');
+window.CookieAccept = new CookieAccept();
+```
+
 ## Options
 Most of the configuration has a sensible default. But off course, there are a couple of options you can set up for your project.
 ```js 
@@ -56,4 +63,3 @@ based on the acceptance of certain cookie types. Here is an example where we all
     <a data-ca-accept>Accept</a>
 </section>
 ```
-
